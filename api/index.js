@@ -1,5 +1,7 @@
 const express = require("express");
 const apiRouter = express.Router();
+// const {client} = require('../db')
+// client.connect();
 
 const jwt = require("jsonwebtoken");
 const { getUserById } = require("../db");
@@ -56,7 +58,7 @@ apiRouter.use(async (req, res, next) => {
     const token = auth.slice(prefix.length);
     try {
       // recover the data
-      const { id } = jwt.verify(data, "secret message");
+      const { id } = jwt.verify(token, process.env["JWT_SECRET"]);
 
       // get the user from the database
       const user = await getUserById(id);
@@ -67,6 +69,7 @@ apiRouter.use(async (req, res, next) => {
 
       next();
     } catch (error) {
+      next(error);
       // there are a few types of errors here
     }
   }
